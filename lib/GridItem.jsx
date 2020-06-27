@@ -316,7 +316,8 @@ export default class GridItem extends React.Component<Props, State> {
           (this.props.cancel ? "," + this.props.cancel : "")
         }
         scale={this.props.transformScale}
-        grid={[192, 18]}
+        grid={[192.8, 18]}
+        bounds='.container'
       >
         {child}
       </DraggableCore>
@@ -353,7 +354,7 @@ export default class GridItem extends React.Component<Props, State> {
       <Resizable
         draggableOpts={{
           disabled: !isResizable,
-          grid: [192, 18]
+          grid: [192.8, 18]
         }}
         className={isResizable ? undefined : "react-resizable-hide"}
         width={position.width}
