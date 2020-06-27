@@ -358,7 +358,8 @@ var GridItem = /*#__PURE__*/function (_React$Component) {
         handle: this.props.handle,
         cancel: ".react-resizable-handle" + (this.props.cancel ? "," + this.props.cancel : ""),
         scale: this.props.transformScale,
-        grid: [192, 18]
+        grid: [192.8, 18],
+        bounds: ".container"
       }, child);
     }
     /**
@@ -398,7 +399,7 @@ var GridItem = /*#__PURE__*/function (_React$Component) {
       return /*#__PURE__*/_react.default.createElement(_reactResizable.Resizable, {
         draggableOpts: {
           disabled: !isResizable,
-          grid: [192, 18]
+          grid: [192.8, 18]
         },
         className: isResizable ? undefined : "react-resizable-hide",
         width: position.width,
