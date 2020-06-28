@@ -610,7 +610,9 @@ var ReactGridLayout = /*#__PURE__*/function (_React$Component) {
           useCSSTransforms = _this$props6.useCSSTransforms,
           transformScale = _this$props6.transformScale,
           draggableCancel = _this$props6.draggableCancel,
-          draggableHandle = _this$props6.draggableHandle;
+          draggableHandle = _this$props6.draggableHandle,
+          bounds = _this$props6.bounds,
+          grid = _this$props6.grid;
       var _this$state3 = this.state,
           mounted = _this$state3.mounted,
           droppingPosition = _this$state3.droppingPosition; // Determine user manipulations possible.
@@ -649,7 +651,9 @@ var ReactGridLayout = /*#__PURE__*/function (_React$Component) {
         maxH: l.maxH,
         maxW: l.maxW,
         static: l.static,
-        droppingPosition: isDroppingItem ? droppingPosition : undefined
+        droppingPosition: isDroppingItem ? droppingPosition : undefined,
+        bounds: Object.keys(bounds).length > 0 && bounds,
+        grid: grid.length > 0 && grid
       }, child);
     } // Called while dragging an element. Part of browser native drag/drop API.
     // Native event target might be the layout itself, or an element within the layout.
@@ -765,5 +769,7 @@ _defineProperty(ReactGridLayout, "defaultProps", {
   onResizeStart: _utils.noop,
   onResize: _utils.noop,
   onResizeStop: _utils.noop,
-  onDrop: _utils.noop
+  onDrop: _utils.noop,
+  bounds: {},
+  grid: []
 });

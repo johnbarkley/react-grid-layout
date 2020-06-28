@@ -230,7 +230,9 @@ var ResponsiveReactGridLayout = /*#__PURE__*/function (_React$Component) {
           onBreakpointChange = _this$props3.onBreakpointChange,
           onLayoutChange = _this$props3.onLayoutChange,
           onWidthChange = _this$props3.onWidthChange,
-          other = _objectWithoutProperties(_this$props3, ["breakpoint", "breakpoints", "cols", "layouts", "margin", "containerPadding", "onBreakpointChange", "onLayoutChange", "onWidthChange"]);
+          bounds = _this$props3.bounds,
+          grid = _this$props3.grid,
+          other = _objectWithoutProperties(_this$props3, ["breakpoint", "breakpoints", "cols", "layouts", "margin", "containerPadding", "onBreakpointChange", "onLayoutChange", "onWidthChange", "bounds", "grid"]);
       /* eslint-enable no-unused-vars */
 
 
@@ -239,7 +241,9 @@ var ResponsiveReactGridLayout = /*#__PURE__*/function (_React$Component) {
         containerPadding: getIndentationValue(containerPadding, this.state.breakpoint),
         onLayoutChange: this.onLayoutChange,
         layout: this.state.layout,
-        cols: this.state.cols
+        cols: this.state.cols,
+        bounds: bounds,
+        grid: grid
       }));
     }
   }], [{
@@ -323,7 +327,9 @@ _defineProperty(ResponsiveReactGridLayout, "propTypes", {
   // Calls back with (currentLayout, allLayouts). allLayouts are keyed by breakpoint.
   onLayoutChange: _propTypes.default.func,
   // Calls back with (containerWidth, margin, cols, containerPadding)
-  onWidthChange: _propTypes.default.func
+  onWidthChange: _propTypes.default.func,
+  bounds: _propTypes.default.object,
+  grid: _propTypes.default.array
 });
 
 _defineProperty(ResponsiveReactGridLayout, "defaultProps", {
@@ -352,5 +358,7 @@ _defineProperty(ResponsiveReactGridLayout, "defaultProps", {
   },
   onBreakpointChange: _utils.noop,
   onLayoutChange: _utils.noop,
-  onWidthChange: _utils.noop
+  onWidthChange: _utils.noop,
+  bounds: {},
+  grid: []
 });

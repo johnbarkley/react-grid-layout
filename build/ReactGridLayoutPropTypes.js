@@ -66,6 +66,8 @@ var _default = {
   // an item past the barrier. They can push items beyond the barrier, though.
   // Intentionally not documented for this reason.
   maxRows: _propTypes.default.number,
+  bounds: _propTypes.default.object,
+  grid: _propTypes.default.array,
   //
   // Flags
   //

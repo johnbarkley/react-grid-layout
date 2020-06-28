@@ -136,7 +136,49 @@ var GridItem = /*#__PURE__*/function (_React$Component) {
       };
       if (!_this.state.dragging) throw new Error("onDrag called before onDragStart.");
       newPosition.left = _this.state.dragging.left + deltaX;
-      newPosition.top = _this.state.dragging.top + deltaY;
+      newPosition.top = _this.state.dragging.top + deltaY; // trying to handle slack issue, this doesn't work great though
+      // if(e.clientY < 432) {
+      //   return
+      // }
+
+      if (_this.props.bounds) {
+        // get item width, height in px
+        var ownerDocument = node.ownerDocument;
+        var ownerWindow = ownerDocument.defaultView;
+        var nodeStyle = ownerWindow.getComputedStyle(node);
+        var width = nodeStyle.width,
+            height = nodeStyle.height;
+        var itemWidth = Number.parseInt(width.slice(0, width.length - 2));
+        var itemHeight = Number.parseInt(height.slice(0, height.length - 2));
+        var _this$props$bounds = _this.props.bounds,
+            boundsWidth = _this$props$bounds.width,
+            boundsHeight = _this$props$bounds.height; // bottom bound
+
+        if (newPosition.top < 0) {
+          newPosition.top = 0;
+        } // left bound
+
+
+        if (newPosition.left < 0) {
+          newPosition.left = 0;
+        } // right bound
+
+
+        var leftVal = newPosition.left + itemWidth;
+
+        if (leftVal > boundsWidth) {
+          var maxLeft = boundsWidth - itemWidth;
+          newPosition.left = maxLeft;
+        } // top bound
+
+
+        var topVal = newPosition.top + itemHeight;
+
+        if (topVal > boundsHeight) {
+          var maxTop = boundsHeight - itemHeight;
+          newPosition.top = maxTop;
+        }
+      }
 
       _this.setState({
         dragging: newPosition
@@ -358,8 +400,7 @@ var GridItem = /*#__PURE__*/function (_React$Component) {
         handle: this.props.handle,
         cancel: ".react-resizable-handle" + (this.props.cancel ? "," + this.props.cancel : ""),
         scale: this.props.transformScale,
-        grid: [192.8, 18],
-        bounds: ".container"
+        grid: this.props.grid && this.props.grid
       }, child);
     }
     /**
@@ -399,7 +440,7 @@ var GridItem = /*#__PURE__*/function (_React$Component) {
       return /*#__PURE__*/_react.default.createElement(_reactResizable.Resizable, {
         draggableOpts: {
           disabled: !isResizable,
-          grid: [192.8, 18]
+          grid: this.props.grid && this.props.grid
         },
         className: isResizable ? undefined : "react-resizable-hide",
         width: position.width,
@@ -592,7 +633,9 @@ _defineProperty(GridItem, "propTypes", {
     e: _propTypes.default.object.isRequired,
     left: _propTypes.default.number.isRequired,
     top: _propTypes.default.number.isRequired
-  })
+  }),
+  bounds: _propTypes.default.object,
+  grid: _propTypes.default.array
 });
 
 _defineProperty(GridItem, "defaultProps", {
