@@ -71,7 +71,10 @@ type Props = {
   onDragStop?: GridItemCallback<GridDragEvent>,
   onResize?: GridItemCallback<GridResizeEvent>,
   onResizeStart?: GridItemCallback<GridResizeEvent>,
-  onResizeStop?: GridItemCallback<GridResizeEvent>
+  onResizeStop?: GridItemCallback<GridResizeEvent>,
+
+  bounds: Object,
+  grid: [number, number],
 };
 
 /**
@@ -156,7 +159,10 @@ export default class GridItem extends React.Component<Props, State> {
       e: PropTypes.object.isRequired,
       left: PropTypes.number.isRequired,
       top: PropTypes.number.isRequired
-    })
+    }),
+
+    bounds: PropTypes.object,
+    grid: PropTypes.array,
   };
 
   static defaultProps = {
@@ -295,52 +301,6 @@ export default class GridItem extends React.Component<Props, State> {
     return style;
   }
 
-  getBoundPosition(draggable: Draggable, x: number, y: number): [number, number] {
-    // If no bounds, short-circuit and move on
-    if (!draggable.props.bounds) return [x, y];
-  
-    // Clone new bounds
-    let {bounds} = draggable.props;
-    bounds = typeof bounds === 'string' ? bounds : cloneBounds(bounds);
-    const node = findDOMNode(draggable);
-  
-    if (typeof bounds === 'string') {
-      const {ownerDocument} = node;
-      const ownerWindow = ownerDocument.defaultView;
-      let boundNode;
-      if (bounds === 'parent') {
-        boundNode = node.parentNode;
-      } else {
-        boundNode = ownerDocument.querySelector(bounds);
-      }
-      if (!(boundNode instanceof ownerWindow.HTMLElement)) {
-        throw new Error('Bounds selector "' + bounds + '" could not find an element.');
-      }
-      const nodeStyle = ownerWindow.getComputedStyle(node);
-      const boundNodeStyle = ownerWindow.getComputedStyle(boundNode);
-      // Compute bounds. This is a pain with padding and offsets but this gets it exactly right.
-      bounds = {
-        left: -node.offsetLeft + int(boundNodeStyle.paddingLeft) + int(nodeStyle.marginLeft),
-        top: -node.offsetTop + int(boundNodeStyle.paddingTop) + int(nodeStyle.marginTop),
-        right: innerWidth(boundNode) - outerWidth(node) - node.offsetLeft +
-          int(boundNodeStyle.paddingRight) - int(nodeStyle.marginRight),
-        bottom: innerHeight(boundNode) - outerHeight(node) - node.offsetTop +
-          int(boundNodeStyle.paddingBottom) - int(nodeStyle.marginBottom)
-      };
-    }
-    return bounds;
-  
-    // Keep x and y below right and bottom limits...
-    if (isNum(bounds.right)) x = Math.min(x, bounds.right);
-    if (isNum(bounds.bottom)) y = Math.min(y, bounds.bottom);
-  
-    // But above left and top limits.
-    if (isNum(bounds.left)) x = Math.max(x, bounds.left);
-    if (isNum(bounds.top)) y = Math.max(y, bounds.top);
-  
-    return [x, y];
-  }
-
   /**
    * Mix a Draggable instance into a child.
    * @param  {Element} child    Child element.
@@ -362,10 +322,7 @@ export default class GridItem extends React.Component<Props, State> {
           (this.props.cancel ? "," + this.props.cancel : "")
         }
         scale={this.props.transformScale}
-        // grid={[192.8, 18]}
-        // bounds={this.props.bounds}
-        // bounds={{left: 0, right: 1000, top: 0, bottom: 800}}
-        // bounds='.container' // doesn't work bc DraggableCore doesn't support bounds
+        grid={this.props.grid && this.props.grid}
       >
         {child}
       </DraggableCore>
@@ -402,7 +359,7 @@ export default class GridItem extends React.Component<Props, State> {
       <Resizable
         draggableOpts={{
           disabled: !isResizable,
-          // grid: [192.8, 18]
+          grid: this.props.grid && this.props.grid,
         }}
         className={isResizable ? undefined : "react-resizable-hide"}
         width={position.width}
@@ -483,32 +440,39 @@ export default class GridItem extends React.Component<Props, State> {
     //   return
     // }
 
-    if(newPosition.top < 0) {
-      newPosition.top = 0
-    }
-    if(newPosition.left < 0) {
-      newPosition.left = 0
-    }
+    if(this.props.bounds) {
+      // get item width, height in px
+      const { ownerDocument } = node
+      const ownerWindow = ownerDocument.defaultView
+      const nodeStyle = ownerWindow.getComputedStyle(node)
+      let { width, height } = nodeStyle
+      const itemWidth = Number.parseInt(width.slice(0, width.length - 2))
+      const itemHeight = Number.parseInt(height.slice(0, height.length - 2))
+      const { width: boundsWidth, height: boundsHeight } = this.props.bounds
 
-    const { ownerDocument } = node
-    const ownerWindow = ownerDocument.defaultView
-    const nodeStyle = ownerWindow.getComputedStyle(node)
-    let { width, height } = nodeStyle
-    width = Number.parseInt(width.slice(0, width.length - 2))
-    height = Number.parseInt(height.slice(0, height.length - 2))
+      // bottom bound
+      if(newPosition.top < 0) {
+        newPosition.top = 0
+      }
 
-    const leftVal = newPosition.left + width
+      // left bound
+      if(newPosition.left < 0) {
+        newPosition.left = 0
+      }
 
-    if(leftVal > 1074) {
-      const maxLeft = 1074 - width
-      newPosition.left = maxLeft
-    }
+      // right bound
+      const leftVal = newPosition.left + itemWidth
+      if(leftVal > boundsWidth) {
+        const maxLeft = boundsWidth - itemWidth
+        newPosition.left = maxLeft
+      }
 
-    const topVal = newPosition.top + height
-
-    if(topVal > 560) {
-      const maxTop = 560 - height
-      newPosition.top = maxTop
+      // top bound
+      const topVal = newPosition.top + itemHeight
+      if(topVal > boundsHeight) {
+        const maxTop = boundsHeight - itemHeight
+        newPosition.top = maxTop
+      }
     }
 
     this.setState({ dragging: newPosition });

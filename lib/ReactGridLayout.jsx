@@ -111,7 +111,10 @@ export default class ReactGridLayout extends React.Component<Props, State> {
     onResizeStart: noop,
     onResize: noop,
     onResizeStop: noop,
-    onDrop: noop
+    onDrop: noop,
+
+    bounds: {},
+    grid: [],
   };
 
   state: State = {
@@ -457,7 +460,7 @@ export default class ReactGridLayout extends React.Component<Props, State> {
       rowHeight,
       maxRows,
       useCSSTransforms,
-      transformScale
+      transformScale,
     } = this.props;
 
     // {...this.state.activeDrag} is pretty slow, actually
@@ -509,7 +512,10 @@ export default class ReactGridLayout extends React.Component<Props, State> {
       useCSSTransforms,
       transformScale,
       draggableCancel,
-      draggableHandle
+      draggableHandle,
+
+      bounds,
+      grid,
     } = this.props;
     const { mounted, droppingPosition } = this.state;
 
@@ -557,6 +563,9 @@ export default class ReactGridLayout extends React.Component<Props, State> {
         maxW={l.maxW}
         static={l.static}
         droppingPosition={isDroppingItem ? droppingPosition : undefined}
+
+        bounds={Object.keys(bounds).length > 0 && bounds}
+        grid={grid.length > 0 && grid}
       >
         {child}
       </GridItem>

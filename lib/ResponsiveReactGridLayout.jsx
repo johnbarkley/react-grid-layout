@@ -134,7 +134,10 @@ export default class ResponsiveReactGridLayout extends React.Component<
     onLayoutChange: PropTypes.func,
 
     // Calls back with (containerWidth, margin, cols, containerPadding)
-    onWidthChange: PropTypes.func
+    onWidthChange: PropTypes.func,
+
+    bounds: PropTypes.object,
+    grid: PropTypes.array,
   };
 
   static defaultProps = {
@@ -151,7 +154,10 @@ export default class ResponsiveReactGridLayout extends React.Component<
     },
     onBreakpointChange: noop,
     onLayoutChange: noop,
-    onWidthChange: noop
+    onWidthChange: noop,
+
+    bounds: {},
+    grid: [],
   };
 
   state = this.generateInitialState();
@@ -305,6 +311,8 @@ export default class ResponsiveReactGridLayout extends React.Component<
       onBreakpointChange,
       onLayoutChange,
       onWidthChange,
+      bounds,
+      grid,
       ...other
     } = this.props;
     /* eslint-enable no-unused-vars */
@@ -320,6 +328,9 @@ export default class ResponsiveReactGridLayout extends React.Component<
         onLayoutChange={this.onLayoutChange}
         layout={this.state.layout}
         cols={this.state.cols}
+
+        bounds={bounds}
+        grid={grid}
       />
     );
   }

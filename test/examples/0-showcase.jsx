@@ -118,6 +118,12 @@ export default class ShowcaseLayout extends React.Component<Props, State> {
           compactType={this.state.compactType}
           preventCollision={!this.state.compactType}
           autoSize={false}
+          // optional props to enforce bounds when dragging, and to drag/resize on a grid
+          bounds={{
+            width: 1400,
+            height: 720,
+          }}
+          grid={[200, 18]}
         >
           {this.generateDOM()}
         </ResponsiveReactGridLayout>
